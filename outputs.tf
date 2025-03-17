@@ -44,7 +44,7 @@ output "bedrock_agent" {
 }
 
 output "bedrock_agent_alias" {
-  value       = var.create_agent_alias == true ? awscc_bedrock_agent_alias.bedrock_agent_alias : null
+  value       = var.create_agent_alias == true ? awscc_bedrock_agent_alias.bedrock_agent_alias[0] : null
   description = "The Amazon Bedrock Agent Alias if it is created."
 }
 
