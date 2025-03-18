@@ -229,7 +229,7 @@ resource "aws_iam_role_policy" "guardrail_policy_supervisor_agent" {
 # Action Group Policies
 
 resource "aws_lambda_permission" "allow_bedrock_agent" {
-  count         = var.create_ag ? length(local.action_group_names) : 0
+  count         = var.create_ag || length(var.action_group_list) > 0 ? length(local.action_group_names) : 0
   action        = "lambda:InvokeFunction"
   function_name = local.action_group_names[count.index]
   principal     = "bedrock.amazonaws.com"
@@ -237,13 +237,13 @@ resource "aws_lambda_permission" "allow_bedrock_agent" {
 }
 
 resource "aws_iam_role_policy" "action_group_policy" {
-  count = var.create_ag ? 1 : 0
+  count = var.create_ag || length(var.action_group_list) > 0 ? 1 : 0
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Effect   = "Allow"
-        Action   = "lambda:InvokeModel"
+        Action   = "lambda:InvokeFunction"
         Resource = concat([var.lambda_action_group_executor], var.action_group_lambda_arns_list)
       }
     ]
