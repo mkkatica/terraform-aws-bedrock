@@ -33,7 +33,7 @@ locals {
     }
     action_group_executor = {
       custom_control = var.custom_control
-      lambda         = var.lambda_action_group_executor
+      lambda         = var.lambda_action_group_executor_arn
     }
   }
   action_group_result = [for count in local.counter_action_group : local.action_group_value]

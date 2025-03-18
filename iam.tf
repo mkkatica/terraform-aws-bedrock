@@ -3,8 +3,10 @@ locals {
   create_kb_role = var.kb_role_arn == null && local.create_kb
   kendra_index_id = var.create_kendra_config == true ? (var.kendra_index_id != null ? var.kendra_index_id : awscc_kendra_index.genai_kendra_index[0].id) : null
   kendra_data_source_bucket_arn = var.create_kendra_s3_data_source ? (var.kb_s3_data_source != null ? var.kb_s3_data_source : awscc_s3_bucket.s3_data_source[0].arn) : null
-  lambda_action_group_executor = var.create_ag ? [var.lambda_action_group_executor] : []
-  action_group_names = concat(var.action_group_lambda_names_list, local.lambda_action_group_executor)
+  lambda_action_group_executor_arn = var.create_ag ? [var.lambda_action_group_executor_arn] : []
+  lambda_action_group_executor_name = var.create_ag ? [var.lambda_action_group_executor_name] : []
+  action_group_names = concat(var.action_group_lambda_names_list, local.lambda_action_group_executor_name)
+  action_group_arns = concat(var.action_group_lambda_arns_list, local.lambda_action_group_executor_arn)
 }
 
 
@@ -238,14 +240,14 @@ resource "aws_lambda_permission" "allow_bedrock_agent" {
 }
 
 resource "aws_iam_role_policy" "action_group_policy" {
-  count = try(length(local.action_group_names), 0)
+  count = try(length(local.action_group_arns), 0)
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Effect   = "Allow"
         Action   = "lambda:InvokeFunction"
-        Resource = concat([var.lambda_action_group_executor], var.action_group_lambda_arns_list)
+        Resource = local.action_group_arns
       }
     ]
   })

@@ -948,8 +948,14 @@ variable "custom_control" {
   default     = null
 }
 
-variable "lambda_action_group_executor" {
+variable "lambda_action_group_executor_arn" {
   description = "ARN of Lambda."
+  type        = string
+  default     = null
+}
+
+variable "lambda_action_group_executor_name" {
+  description = "Name of Lambda."
   type        = string
   default     = null
 }
